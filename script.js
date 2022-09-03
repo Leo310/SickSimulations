@@ -50,8 +50,8 @@ function rule(pixels1, pixels2, g) {
 
         const ratioY = distanceY / distance;
         const ratioX = distanceX / distance;
-        const accelX = ratioX * (force / p1.mass);
-        const accelY = ratioY * (force / p1.mass);
+        const accelX = ratioX * (force / p1.mass)*0.5;
+        const accelY = ratioY * (force / p1.mass)*0.5;
 
         p1.vel.x += accelX;
         p1.vel.y += accelY;
@@ -73,16 +73,22 @@ function rule(pixels1, pixels2, g) {
   }
 }
 
-let pixels = createPixels(10, 20, 10, "#673AB7");
+let pixels = createPixels(50, 20, 10, "#673AB7");
+let pixels2 = createPixels(50, 20, 10, "#C62828");
+// let pixels3 = createPixels(10, 20, 10, "#303F9F");
+// let pixels4 = createPixels(10, 20, 10, "#00897B");
 
 function main() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#121212";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  rule(pixels, pixels, -1);
+  rule(pixels, pixels, -0.1);
+  rule(pixels2, pixels, -0.01);
+  rule(pixels, pixels2, 0.01);
 
   drawPixels(pixels);
+  drawPixels(pixels2);
   requestAnimationFrame(main);
 }
 main();
