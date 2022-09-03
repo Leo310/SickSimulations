@@ -8,13 +8,12 @@ function Vec(x, y) {
   this.x = x;
   this.y = y;
 }
-function Pixel(position, width, height, vel, accel, mass, color) {
+function Pixel(position, width, height, vel, mass, color) {
   this.position = position;
   this.width = width;
   this.height = height;
   this.color = color;
   this.vel = vel;
-  this.accel = accel;
   this.mass = mass;
 }
 
@@ -29,9 +28,9 @@ function createPixels(count, size, mass, color) {
   let pixels = [];
   for (let i = 0; i < count; i++) {
     const pixel = new Pixel(
-        new Vec(Math.floor(Math.random() * (canvas.clientWidth - 400)) + 200,
-                Math.floor(Math.random() * (canvas.clientHeight - 400)) + 200),
-        size, size, new Vec(0, 0), new Vec(0, 0), mass, color)
+        new Vec(Math.floor(Math.random() * canvas.clientWidth),
+                Math.floor(Math.random() * canvas.clientHeight)),
+        size, size, new Vec(0, 0), mass, color)
     pixels.push(pixel);
   }
   return pixels;
@@ -41,45 +40,47 @@ function rule(pixels1, pixels2, g) {
   for (let i = 0; i < pixels1.length; i++) {
     for (let j = 0; j < pixels2.length; j++) {
       if (i != j) {
-        const distanceX = pixels1[i].position.x - pixels2[j].position.x;
-        const distanceY = pixels1[i].position.y - pixels2[j].position.y;
+        let p1 = pixels1[i]
+        let p2 = pixels2[j]
+        const distanceX = p1.position.x - p2.position.x;
+        const distanceY = p1.position.y - p2.position.y;
         let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        let force, ratioX, ratioY = 0;
         Math.max(distance, 1)
-        force = (g * pixels1[i].mass * pixels2[j].mass) / distance;
+        const force = (g * p1.mass * p2.mass) / distance;
 
-        ratioY = distanceY / distance;
-        ratioX = distanceX / distance;
-        pixels1[i].accel.x = ratioX * (force / pixels1[i].mass);
-        pixels1[i].accel.y = ratioY * (force / pixels1[i].mass);
+        const ratioY = distanceY / distance;
+        const ratioX = distanceX / distance;
+        const accelX = ratioX * (force / p1.mass);
+        const accelY = ratioY * (force / p1.mass);
 
-        pixels1[i].vel.x += pixels1[i].accel.x;
-        pixels1[i].vel.y += pixels1[i].accel.y;
-        // console.log(pixels1[0].vel.x)
+        p1.vel.x += accelX;
+        p1.vel.y += accelY;
         // console.log("DistanceX: %d   DistanceY: %d   Distance: %f   Force: %f
         // Accel: %f   Vel: %f", distanceX, distanceY, distance, force,
       }
     }
   }
   for (let i = 0; i < pixels1.length; i++) {
-    if(pixels1[i].position.x + pixels1[i].vel.x > canvas.width || pixels1[i].position.x + pixels1[i].vel.x < 0)
-      pixels1[i].vel.x *=-1
-    if(pixels1[i].position.y + pixels1[i].vel.y > canvas.height || pixels1[i].position.y + pixels1[i].vel.y < 0)
-      pixels1[i].vel.y *=-1
-    pixels1[i].position.x += pixels1[i].vel.x;
-    pixels1[i].position.y += pixels1[i].vel.y;
+    let p1 = pixels1[i]
+    if (p1.position.x + p1.vel.x > canvas.width ||
+        p1.position.x + p1.vel.x < 0)
+      p1.vel.x *= -1
+      if (p1.position.y + p1.vel.y > canvas.height ||
+          p1.position.y + p1.vel.y < 0)
+      p1.vel.y *= -1
+      p1.position.x += p1.vel.x;
+    p1.position.y += p1.vel.y;
   }
 }
 
-let pixels = createPixels(10, 20, 10, "yellow");
-// let pixels2 = createPixels(1, 50, new V2(0, 0), new V2(0, 0), 1000, "red");
-console.log(pixels)
+let pixels = createPixels(10, 20, 10, "#673AB7");
+
 function main() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "steelblue";
+  ctx.fillStyle = "#121212";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  rule(pixels, pixels, -5);
+  rule(pixels, pixels, -1);
 
   drawPixels(pixels);
   requestAnimationFrame(main);
