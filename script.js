@@ -37,16 +37,13 @@ function createPixels(count, size, mass, color) {
 }
 
 function rule(pixels1, pixels2, g) {
-  for (let i = 0; i < pixels1.length; i++) {
-    for (let j = 0; j < pixels2.length; j++) {
-      if (i != j) {
-        let p1 = pixels1[i];
-        let p2 = pixels2[j];
-        const distanceX = p1.position.x - p2.position.x;
-        const distanceY = p1.position.y - p2.position.y;
-        let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        distance = Math.min(Math.max(distance, 150), 300)
-        
+  pixels1.forEach(p1 => {
+    pixels2.forEach(p2 => {
+      const distanceX = p1.position.x - p2.position.x;
+      const distanceY = p1.position.y - p2.position.y;
+      let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      if (distance > 20 && distance < 80) {
         const force = (g * p1.mass * p2.mass) / distance;
 
         const ratioY = distanceY / distance;
@@ -56,53 +53,44 @@ function rule(pixels1, pixels2, g) {
 
         p1.vel.x += accelX;
         p1.vel.y += accelY;
-        // console.log("DistanceX: %d   DistanceY: %d   Distance: %f   Force: %f
-        // Accel: %f   Vel: %f", distanceX, distanceY, distance, force,
       }
-    }
-  }
-  for (let i = 0; i < pixels1.length; i++) {
-    let p1 = pixels1[i];
-    if (p1.position.x + p1.vel.x > canvas.width ||
-        p1.position.x + p1.vel.x < 0) {
-      p1.vel.x *= -1
-    }
-    if (p1.position.y + p1.vel.y > canvas.height ||
-        p1.position.y + p1.vel.y < 0) {
-      p1.vel.y *= -1
-    }
+    });
     p1.position.x += p1.vel.x;
     p1.position.y += p1.vel.y;
-  }
+    if (p1.position.x > canvas.width || p1.position.x < 0)
+      p1.vel.x *= -1;
+    if (p1.position.y > canvas.height || p1.position.y < 0)
+      p1.vel.y *= -1;
+  });
 }
 
-let pixels = createPixels(100, 20, 1, "#673AB7");
-let pixels2 = createPixels(100, 20, 1, "#C62828");
-let pixels3 = createPixels(100, 20, 10, "#303F9F");
-let pixels4 = createPixels(100, 20, 10, "#00897B");
+let pixels = createPixels(200, 20, 1, "#673AB7");
+let pixels2 = createPixels(200, 20, 1, "#C62828");
+// let pixels3 = createPixels(100, 20, 1, "#303F9F");
+// let pixels4 = createPixels(100, 20, 1, "#00897B");
 
 let time = performance.now()
 function main() {
-  if (performance.now() - time >= 1000 / 60 ) {
+  if (performance.now() - time >= 1000 / 60) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#121212";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     rule(pixels, pixels, -0.1);
-    rule(pixels, pixels2, -0.01);
-    rule(pixels, pixels3, 0.01);
-    rule(pixels2, pixels, 0.01);
-    rule(pixels2, pixels3, -0.01);
-    rule(pixels3, pixels3, -0.01);
-    rule(pixels4, pixels4, 0.01);
-    rule(pixels4, pixels, 0.01);
-    rule(pixels3, pixels4, 0.01);
+    // rule(pixels, pixels2, -0.1);
+    // rule(pixels2, pixels, 0.1);
     // rule(pixels2, pixels2, -0.1);
+    // rule(pixels, pixels3, 0.01);
+    // rule(pixels2, pixels3, -0.01);
+    // rule(pixels3, pixels3, -0.01);
+    // rule(pixels4, pixels4, 0.01);
+    // rule(pixels4, pixels, 0.01);
+    // rule(pixels3, pixels4, 0.01);
 
     drawPixels(pixels);
-    drawPixels(pixels2);
-    drawPixels(pixels3);
-    drawPixels(pixels4);
+    // drawPixels(pixels2);
+    // drawPixels(pixels3);
+    // drawPixels(pixels4);
 
     time = performance.now()
   }
