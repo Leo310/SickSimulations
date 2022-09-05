@@ -23,6 +23,12 @@ class Pixel:
         self.color = color
         self.vel = np.array((0.0, 0.0))
 
+    def draw(self):
+        pygame.draw.rect(
+            screen, pygame.Color(self.color),
+            pygame.Rect(self.position[0], self.position[1], self.size,
+                        self.size))
+
 
 def createPixels(num, size, color):
     pixels = []
@@ -34,15 +40,12 @@ def createPixels(num, size, color):
 
 def drawPixels(pixels):
     for pixel in pixels:
-        pygame.draw.rect(
-            screen, pygame.Color(pixel.color),
-            pygame.Rect(pixel.position[0], pixel.position[1], pixel.size,
-                        pixel.size))
+        pixel.draw()
 
 
-def gravity(pixelsA, pixelsB, g):
-    for i, p1 in enumerate(pixelsA):
-        for j, p2 in enumerate(pixelsB):
+def gravity(pixelsa, pixelsb, g):
+    for i, p1 in enumerate(pixelsa):
+        for j, p2 in enumerate(pixelsb):
             if i != j:
                 distance_xy = p1.position - p2.position
                 d = math.sqrt(sum([n**2 for n in distance_xy]))
